@@ -1,0 +1,21 @@
+#Appication Config
+server:
+  port: 8989
+  error:
+    whitelabel:
+      enabled: false
+  
+spring:
+  application:
+    name: JWT-Validate-Microservice
+  
+#Eureka Config
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      
+  instance:
+    hostname: localhost

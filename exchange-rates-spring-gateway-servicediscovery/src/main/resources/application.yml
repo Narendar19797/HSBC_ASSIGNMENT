@@ -1,0 +1,56 @@
+#Appication Config
+server:
+  port: 9093
+  error:
+    whitelabel:
+      enabled: false
+  
+spring:
+  application:
+    name: Exchange-Rates-Gateway-Servicediscovery
+  
+  cloud:    gateway:      routes:      - id: exchange-rate-load-service
+        uri: lb://Exchange-Rates-Microservice-Load
+        predicates:        - Path=/load/**, /fetch/**
+        filters:        - name: CircuitBreaker
+          args:            name: load-service
+            fallbackuri: forword:/loadFallBack
+              - id: exchange-rate-expos-service
+        uri: lb://Exchange-Rates-Microservice-Expos
+        predicates:
+        - Path=/expos/**
+        filters:
+        - name: CircuitBreaker
+          args:
+            name: expos-service
+            fallbackuri: forword:/exposFallBack
+       
+      - id: exchange-rates-microservice-jwt
+        uri: lb://JWT-Validate-Microservice
+        predicates:
+        - Path=/generatetoken/**, /token/**
+        filters:
+        - name: CircuitBreaker
+          args:
+            name: load-service
+            fallbackuri: forword:/jwtFallBack 
+
+# to evaluate fallback stream
+management:  endpoints:    web:      exposure:        include: hystrix.stream      base-path: /
+      hystrix:  command:
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 50000                
+        
+#Eureka Config
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+            
+  instance:
+    hostname: localhost

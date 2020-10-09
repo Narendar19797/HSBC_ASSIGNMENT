@@ -1,0 +1,21 @@
+server:
+  port: 9094
+
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"
+
+spring:
+  application:
+    name: Exchange-Rates-Microservice-Hystrix-Dashboard
+        
+#Eureka Config
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      
+  instance:
+    hostname: localhost
