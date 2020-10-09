@@ -1,0 +1,30 @@
+#GatwayUrl
+#jwt:url: http://localhost:9093
+
+#Appication Config
+server:
+  port: 9092
+  error:
+    whitelabel:
+      enabled: false
+  
+spring:
+  application:
+    name: Exchange-Rates-Microservice-Expos
+
+feign:
+  client:
+    config:
+      default:
+        logger-level: full
+ 
+#Eureka Config
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+      
+  instance:
+    hostname: localhost
