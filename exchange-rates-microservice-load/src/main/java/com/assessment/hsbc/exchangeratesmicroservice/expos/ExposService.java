@@ -61,7 +61,7 @@ public class ExposService {
 		if (toDate == null) {
 			return Utils.CustApiObject(null, Constance.FAILURE, Constance.INVALIED_DATE_ERROR, htpSts);
 		}
-		le = repo.findByDate(fromDate, toDate);
+		le = repo.findByDateBetween(fromDate, toDate);
 		htpSts = HttpStatus.OK;
 		return Utils.CustApiObject(le, Constance.SUCCESS, Constance.LOAD_SUCCESSFULLY, htpSts);
 	}

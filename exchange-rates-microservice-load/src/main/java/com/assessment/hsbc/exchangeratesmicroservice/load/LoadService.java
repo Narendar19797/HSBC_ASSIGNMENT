@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import com.assessment.hsbc.exchangeratesmicroservice.utils.Constance;
 import com.assessment.hsbc.exchangeratesmicroservice.utils.DateValidator;
 import com.assessment.hsbc.exchangeratesmicroservice.utils.DateValidatorUsingDateFormat;
-import com.assessment.hsbc.exchangeratesmicroservice.utils.Result;
+import com.assessment.hsbs.exchangeratesmicroservice.modle.ExchangeRates;
+import com.assessment.hsbs.exchangeratesmicroservice.modle.Rates;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,7 +62,7 @@ public class LoadService {
 			}
 
 			if (resp == null) {
-				Result response = restTemplate.getForObject(url, Result.class);
+				ExchangeRates response = restTemplate.getForObject(url, ExchangeRates.class);
 				resp = this.saveData(response);
 			} else {
 				resp = new ResponseEntity<String>(Constance.NO_DATA_FOUND, HttpStatus.NOT_FOUND);
@@ -77,25 +77,18 @@ public class LoadService {
 		return CompletableFuture.completedFuture(resp);
 	}
 
-	private ResponseEntity<?> saveData(Result response) {
+	private ResponseEntity<?> saveData(ExchangeRates response) {
 		ResponseEntity<?> results = null;
 		try {
 			LoadEntity le = new LoadEntity();
-			Map<String, Double> rates = response.getRates();
+			Rates rates = response.getRates();
 			le.setBase(response.getBase());
-
 			if (rates != null) {
-				if (rates.containsKey("GBP"))
-					le.setGBP(rates.get("GBP"));
-
-				if (rates.containsKey("HKD"))
-					le.setHKD(rates.get("HKD"));
-
-				if (rates.containsKey("USD"))
-					le.setUSD(rates.get("USD"));
+				le.setGBP(rates.getGBP());
+				le.setHKD(rates.getHKD());
+				le.setUSD(rates.getUSD());
 			}
 			le.setDate(validator.isValid(response.getDate()));
-
 			repo.save(le);
 			results = new ResponseEntity<String>(Constance.DATA_SAVED_SUCCESS, HttpStatus.OK);
 		} catch (Exception e) {
@@ -103,7 +96,6 @@ public class LoadService {
 			results = new ResponseEntity<String>(Constance.DATA_SAVED_FAILED + e.getMessage(),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 		return results;
 	}
 
